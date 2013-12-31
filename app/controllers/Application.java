@@ -22,6 +22,7 @@ public class Application extends Controller {
 	public static Result asJson(String from, String to) {
 		// JsonNode json = request().body().asJson();
 
+		String resultTitle = null;
 		String resultFare = null;
 
 		try {
@@ -44,6 +45,9 @@ public class Application extends Controller {
 			) {
 				String line;
 				while ((line = br.readLine()) != null) {
+					if (line.contains("<title>")) {
+						resultTitle = line;
+					} 
 					if (line.contains("route-fare-")) {
 						resultFare = getFare(line);
 						break;
@@ -64,6 +68,7 @@ public class Application extends Controller {
 			result.put("status", "NG");
 			result.put("fare", "");			
 		}
+		result.put("title", resultTitle);
 
 		return ok(result);
 	}
