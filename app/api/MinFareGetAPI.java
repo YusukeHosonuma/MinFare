@@ -5,10 +5,13 @@ import java.net.*;
 
 import java.util.regex.*;
 
+/**
+ * Yahoo!路線情報のページから区間を指定して最安値を取得するAPI。
+ */
 public class MinFareGetAPI {
 
 	/**
-	 * APIの実行結果
+	 * APIの実行結果。
 	 */
 	public static class MinFareGetAPIResult {
 		public final boolean status;
@@ -20,7 +23,30 @@ public class MinFareGetAPI {
 	}
 
 	/**
-	 * Yahoo!路線情報から最安値情報を取得します。
+	 * リクエスト用のURLを組み立てるビルダー。
+	 */
+	public static class URLBuilder {
+
+		private final String from;
+		private final String to;
+
+		public URLBuilder(String from, String to) throws UnsupportedEncodingException {
+			this.from = URLEncoder.encode(from, "UTF-8");
+			this.to   = URLEncoder.encode(to,   "UTF-8");
+		}
+
+		public URL build() throws MalformedURLException {
+			String urlStr = "http://transit.loco.yahoo.co.jp/search/result?"
+						+ "from=" + from + "&"
+						+ "flatlon=&"
+						+ "to=" + to + "&"
+						+ "via=&expkind=1&ym=201303&d=20&datepicker=&hh=10&m1=1&m2=1&type=1&ws=2&s=1&x=101&y=12&kw=";
+			return new URL(urlStr);
+		}
+	}
+
+	/**
+	 * 最安値情報を取得します。
 	 * 
 	 * @param from 出発地
 	 * @param to 目的地
@@ -28,20 +54,11 @@ public class MinFareGetAPI {
 	 */
 	public MinFareGetAPIResult request(String from, String to) {
 
-		String resultTitle = null;
 		int resultFare = -1;
 
 		try {
-			String from_e = URLEncoder.encode(from, "UTF-8");
-			String to_e   = URLEncoder.encode(to,   "UTF-8");
+			URL url = new URLBuilder(from, to).build();
 
-			String urlStr = "http://transit.loco.yahoo.co.jp/search/result?"
-						+ "from=" + from_e + "&"
-						+ "flatlon=&"
-						+ "to=" + to_e + "&"
-						+ "via=&expkind=1&ym=201303&d=20&datepicker=&hh=10&m1=1&m2=1&type=1&ws=2&s=1&x=101&y=12&kw=";
-
-			URL url = new URL(urlStr);
 			HttpURLConnection http = (HttpURLConnection) url.openConnection();
 			http.setRequestMethod("GET");
 			http.connect();
@@ -77,5 +94,5 @@ public class MinFareGetAPI {
 		} else {
 			return -1;
 		}
-	} 
+	}
 }
