@@ -36,8 +36,8 @@ public class MinFareGetAPI {
 
 		public URLBuilder(String from, String to) {
 			try {
-				this.from = URLEncoder.encode(from, "UTF-8");
-				this.to   = URLEncoder.encode(to,   "UTF-8");
+				this.from = from;//URLEncoder.encode(from, "UTF-8");
+				this.to   = to;//URLEncoder.encode(to,   "UTF-8");
 			} catch (UnsupportedEncodingException e) {
 				// do nothing (Don't happend at target environment)
 			}
