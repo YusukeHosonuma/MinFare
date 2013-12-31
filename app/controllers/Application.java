@@ -15,7 +15,7 @@ import org.codehaus.jackson.node.ObjectNode;
 public class Application extends Controller {
   
     public static Result index() {
-        return ok(index.render("Your new application is ready."));
+        return badRequest("リクエスト構文に誤りがあります。");
     }
   
 	public static Result asJson(String from, String to) {
@@ -23,14 +23,9 @@ public class Application extends Controller {
 		MinFareGetAPIResult apiResult = new MinFareGetAPI().request(from, to);
 
 		ObjectNode result = Json.newObject();
-
-		if (apiResult.status) {
-			result.put("status", "OK");
-			result.put("fare", Integer.toString(apiResult.fare));
-		} else {
-			result.put("status", "NG");
-			result.put("fare", "");
-		}
+		result.put("status", Integer.toString(apiResult.statusCode));
+		result.put("fare",   Integer.toString(apiResult.fare));
+		result.put("url",    apiResult.url);
 
 		return ok(result);
 	}
