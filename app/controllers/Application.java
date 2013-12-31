@@ -31,7 +31,6 @@ public class Application extends Controller {
 			result.put("status", "NG");
 			result.put("fare", "");
 		}
-		result.put("title", resultTitle);
 
 		return ok(result);
 	}
