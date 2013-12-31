@@ -14,11 +14,15 @@ public class MinFareGetAPI {
 	 * APIの実行結果。
 	 */
 	public static class MinFareGetAPIResult {
-		public final boolean status;
+
+		public final int statusCode;
 		public final int fare;
-		public MinFareGetAPIResult(boolean status, int fare) {
-			this.status = status;
-			this.fare = fare;
+		public final String url;
+
+		public MinFareGetAPIResult(int statusCode, int fare, String url) {
+			this.statusCode = statusCode;
+			this.fare       = fare;
+			this.url        = url;
 		}
 	}
 
@@ -27,21 +31,25 @@ public class MinFareGetAPI {
 	 */
 	public static class URLBuilder {
 
-		private final String from;
-		private final String to;
+		private String from;
+		private String to;
 
-		public URLBuilder(String from, String to) throws UnsupportedEncodingException {
-			this.from = URLEncoder.encode(from, "UTF-8");
-			this.to   = URLEncoder.encode(to,   "UTF-8");
+		public URLBuilder(String from, String to) {
+			try {
+				this.from = URLEncoder.encode(from, "UTF-8");
+				this.to   = URLEncoder.encode(to,   "UTF-8");
+			} catch (UnsupportedEncodingException e) {
+				// do nothing (Don't happend at target environment)
+			}
 		}
 
-		public URL build() throws MalformedURLException {
-			String urlStr = "http://transit.loco.yahoo.co.jp/search/result?"
+		public String build() {
+			String urlString = "http://transit.loco.yahoo.co.jp/search/result?"
 						+ "from=" + from + "&"
 						+ "flatlon=&"
 						+ "to=" + to + "&"
 						+ "via=&expkind=1&ym=201303&d=20&datepicker=&hh=10&m1=1&m2=1&type=1&ws=2&s=1&x=101&y=12&kw=";
-			return new URL(urlStr);
+			return urlString;
 		}
 	}
 
@@ -54,14 +62,23 @@ public class MinFareGetAPI {
 	 */
 	public MinFareGetAPIResult request(String from, String to) {
 
+		// 以下がそれぞれ正しく取得できなかった場合のAPI返却値
+		int statusCode = -1;
 		int resultFare = -1;
 
-		try {
-			URL url = new URLBuilder(from, to).build();
+		String urlString = new URLBuilder(from, to).build();
 
-			HttpURLConnection http = (HttpURLConnection) url.openConnection();
+		try {
+			HttpURLConnection http = (HttpURLConnection) new URL(urlString).openConnection();
 			http.setRequestMethod("GET");
 			http.connect();
+
+			statusCode = http.getResponseCode();
+
+			// 200以外は中断
+			if (statusCode != HttpURLConnection.HTTP_OK) {
+				return new MinFareGetAPIResult(statusCode, resultFare, urlString);
+			}
 
 			try (BufferedReader br = new BufferedReader( // AutoClosable
 				new InputStreamReader(http.getInputStream(), "UTF-8"))
@@ -74,16 +91,11 @@ public class MinFareGetAPI {
 					}
 				}
 			}
-
 		} catch (IOException e) {
-			return new MinFareGetAPIResult(false, -1);
+			// do nothing
 		}
 
-		if (resultFare == -1) {
-			return new MinFareGetAPIResult(false, -1);
-		} else {
-			return new MinFareGetAPIResult(true, resultFare);
-		}
+		return new MinFareGetAPIResult(statusCode, resultFare, urlString);
 	}
 
 	private int getFareFromLine(String fareLine) {
