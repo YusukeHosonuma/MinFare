@@ -35,12 +35,12 @@ public class MinFareGetAPI {
 		private String to;
 
 		public URLBuilder(String from, String to) {
-			try {
+			//try {
 				this.from = from;//URLEncoder.encode(from, "UTF-8");
 				this.to   = to;//URLEncoder.encode(to,   "UTF-8");
-			} catch (UnsupportedEncodingException e) {
+			//} catch (UnsupportedEncodingException e) {
 				// do nothing (Don't happend at target environment)
-			}
+			//}
 		}
 
 		public String build() {
