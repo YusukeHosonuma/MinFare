@@ -44,7 +44,7 @@ public class Application extends Controller {
 			) {
 				String line;
 				while ((line = br.readLine()) != null) {
-					if (line.contains("route-fare-on")) {
+					if (line.contains("route-fare-")) {
 						resultFare = getFare(line);
 						break;
 					}
