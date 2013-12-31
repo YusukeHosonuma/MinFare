@@ -41,7 +41,7 @@ public class Application extends Controller {
 			http.connect();
 
 			try (BufferedReader br = new BufferedReader( // AutoClosable
-				new InputStreamReader(http.getInputStream()))
+				new InputStreamReader(http.getInputStream(), "UTF-8"))
 			) {
 				String line;
 				while ((line = br.readLine()) != null) {
