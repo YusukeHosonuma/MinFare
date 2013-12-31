@@ -14,3 +14,12 @@ http://thawing-ocean-4235.herokuapp.com/json/大宮/六本木
 ====
 
 Java + PlayFrameworkで作られており、Heroku上で動作するようになっています。
+
+
+JSONスキーマ
+============
+
+|要素  |値            |備考                |
+|:-----|:-------------|:-------------------|
+|status|OK or NG      |-                   |
+|fare  |最安値(例:160)|statusがNGの場合は空|
