@@ -29,4 +29,19 @@ public class Application extends Controller {
 
 		return ok(result);
 	}
+
+	public static Result asXml(String from, String to) {
+
+		MinFareGetAPIResult apiResult = new MinFareGetAPI().request(from, to);
+
+		StringBuilder xmlSb = new StringBuilder();
+		xmlSb.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+		xmlSb.append("<Result>");
+		xmlSb.append("<Status>" + apiResult.statusCode + "</Status>");
+		xmlSb.append("<Fare>" + apiResult.fare + "</Fare>");
+		xmlSb.append("<URL><![CDATA[" + apiResult.url + "]]></URL>");
+		xmlSb.append("</Result>");
+
+		return ok(xmlSb.toString()).as("application/xml; charset=UTF-8");
+	}
 }
